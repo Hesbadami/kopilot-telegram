@@ -9,9 +9,7 @@ CREATE TABLE IF NOT EXISTS `user` (
     `photo_file_id` VARCHAR(255) NULL,
     `is_deleted` BOOLEAN DEFAULT FALSE,
     `phone` VARCHAR(255) NULL,
-
     `is_bot` BOOLEAN DEFAULT FALSE,
-
     `date_created` DATETIME(6) DEFAULT CURRENT_TIMESTAMP(6),
     `date_modified` DATETIME(6) DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6),
 
@@ -29,7 +27,6 @@ CREATE TABLE IF NOT EXISTS `chat` (
     `accent_color` VARCHAR(7),
     `invite_link` VARCHAR(255),
     `is_deleted` BOOLEAN DEFAULT FALSE,
-    
     `date_created` DATETIME(6) DEFAULT CURRENT_TIMESTAMP(6),
     `date_modified` DATETIME(6) DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6),
 
@@ -41,15 +38,12 @@ CREATE TABLE IF NOT EXISTS `chatmember` (
     `chat_id` BIGINT NOT NULL,
     `user_id` BIGINT NOT NULL,
     `status` ENUM('member', 'administrator', 'creator', 'restricted', 'left', 'kicked', 'banned') NOT NULL,
-
     `custom_title` VARCHAR(255) NULL,
-
     `joined_at` DATETIME(6) NOT NULL,
     `left_at` DATETIME(6) NULL,
     `is_muted` BOOLEAN DEFAULT FALSE,
     `can_send_messages` BOOLEAN DEFAULT TRUE,
     `can_delete_messages` BOOLEAN DEFAULT FALSE,
-
     `date_created` DATETIME(6) DEFAULT CURRENT_TIMESTAMP(6),
     `date_modified` DATETIME(6) DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6),
 
@@ -80,10 +74,8 @@ CREATE TABLE IF NOT EXISTS `message` (
         'photo', 'sticker', 'video', 'video_note',
         'voice', 'other'
     ),
-
-    `is_external_forward` BOOLEAN FALSE,
+    `is_external_forward` BOOLEAN DEFAULT FALSE,
     `is_deleted` BOOLEAN DEFAULT FALSE,
-
     `date_created` DATETIME(6) DEFAULT CURRENT_TIMESTAMP(6),
     `date_modified` DATETIME(6) DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6),
 
@@ -112,7 +104,6 @@ CREATE TABLE IF NOT EXISTS `message` (
     INDEX `idx_is_deleted` (`is_deleted`),
     INDEX `idx_is_external_forward` (`is_external_forward`),
     INDEX `idx_type` (`type`),
-
     INDEX `idx_chat_user` (`chat_id`, `user_id`),
     INDEX `idx_user_date` (`user_id`, `date`),
     INDEX `idx_user_deleted_date` (`user_id`, `is_deleted`, `date`)
@@ -125,9 +116,7 @@ CREATE TABLE IF NOT EXISTS `reaction` (
     `user_id` BIGINT NOT NULL,
     `chat_id` BIGINT NOT NULL,
     `date` DATETIME(6) NOT NULL,
-    
     `is_deleted` BOOLEAN DEFAULT FALSE,
-
     `date_created` DATETIME(6) DEFAULT CURRENT_TIMESTAMP(6),
     `date_modified` DATETIME(6) DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6),
 

@@ -20,7 +20,12 @@ MYSQL_CFG = {
 TELEGRAM_SECRET = os.environ.get("TELEGRAM_SECRET")
 TELEGRAM_TOKEN = os.environ.get("TELEGRAM_TOKEN")
 
-NATS_URL = os.environ.get("NATS_URL")
+NATS_CFG = {
+    'servers': os.environ.get("NATS_URL"),
+    'name': 'kopilot_telegram',
+    'reconnect_time_wait': 2,
+    'max_reconnect_attempts': 10
+}
 
 LOGGING_CFG = {
     'version': 1,
