@@ -262,7 +262,7 @@ async def handle_message(message_data: dict):
                     {
                         'user_id': new_user_id,
                         'chat_id': chat_id,
-                        'timestamp': message_date
+                        'timestamp': message_date.isoformat()
                     }
                 )
 
@@ -276,7 +276,7 @@ async def handle_message(message_data: dict):
                 {
                     'user_id': left_user_id,
                     'chat_id': chat_id,
-                    'timestamp': message_date
+                    'timestamp': message_date.isoformat()
                 }
             )
 
@@ -400,7 +400,7 @@ async def handle_chatmember_updated(chatmember_updated: dict):
             {
                 'user_id': new_user_id,
                 'chat_id': chat_id,
-                'timestamp': date,
+                'timestamp': date.isoformat(),
                 'performer': user_id
             }
         )

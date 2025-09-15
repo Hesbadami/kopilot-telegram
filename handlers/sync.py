@@ -100,7 +100,7 @@ async def download_chat_photo(chat, file_id):
             file_path_local = Path(MEDIA_PATH, 'chat', filename)
             
             await file_path_local.write_bytes(image_bytes)
-            
+
             query = """
             UPDATE `kopilot_telegram`.`chat`
             SET 
@@ -122,6 +122,7 @@ async def download_chat_photo(chat, file_id):
     except Exception as e:
         logger.error(f"Failed to download chat photo for chat {chat['chat_id']}: {str(e)}")
 
+
 @nc.sub("telegram.sync.user")
 async def sync_user(data: dict):
 
@@ -131,7 +132,6 @@ async def sync_user(data: dict):
         (user_id,),
         fetch_one=True
     )
-
     if not user:
         logger.warning(f"Attempted sync on non existing user: {user_id}.")
         return
@@ -144,7 +144,6 @@ async def sync_user(data: dict):
         if file_id != user['photo_file_id']:
             await download_user_photo(user, file_id)
 
-    ...
 
 @nc.sub("telegram.sync.chat")
 async def sync_chat(data: dict):
@@ -157,6 +156,7 @@ async def sync_chat(data: dict):
     )
     if not chat:
         logger.warning(f"Attempted sync on non existing chat: {chat_id}.")
+        return
 
     chat_data = await tg.call("getChat", chat_id=chat_id)
     if chat_data:
@@ -180,10 +180,63 @@ async def sync_chat(data: dict):
             if file_id and file_id != chat['photo_file_id']:
                 await download_chat_photo(chat, file_id)
     
-        ...
-
-    ...
 
 @nc.sub("telegram.sync.chatmember")
 async def sync_chatmember(data: dict):
-    ...
+    
+    user_id = data['user_id']
+    chat_id = data['chat_id']
+    timestamp = datetime.fromisoformat(data['timestamp'])
+    performer = data.get("performer")
+
+    query = """
+    SELECT * FROM `kopilot_telegram`.`chatmember`
+    WHERE user_id = %s AND chat_id = %s LIMIT 1;
+    """
+    chatmember = await db.aexecute_query(
+        query,
+        (user_id, chat_id),
+        fetch_one=True
+    )
+    if not chatmember:
+        logger.warning(f"Attempted sync on non existing chatmember: {user_id}, {chat_id}")
+        return
+    
+    chatmember_data = await tg.call("getChatMember", user_id=user_id, chat_id=chat_id)
+    status = chatmember_data.get("status", chatmember['status'])
+    custom_title = chatmember_data.get("custom_title", chatmember['custom_title'])
+    
+    added_by = chatmember['added_by']
+    removed_by = chatmember['removed_by']
+
+    joined_at = chatmember['joined_at']
+    left_at = chatmember['left_at']
+
+    if chatmember['status'] not in ["member", "administrator", "creator"] and status in ["member", "administrator", "creator"]:
+        joined_at = timestamp
+        added_by = performer
+
+    elif chatmember['status'] in ["member", "administrator", "creator"] and status not in ["member", "administrator", "creator"]:
+        left_at = timestamp
+        removed_by = performer
+    
+    query = """
+    UPDATE `kopilot_telegram`.`chatmember`
+    SET
+        `status` = %s, 
+        `custom_title` = %s, 
+        `joined_at` = %s, 
+        `left_at` = %s,
+        `added_by` = %s,
+        `removed_by` = %s
+    WHERE `user_id` = %s AND `chat_id` = %s;
+    """
+    params = (
+        status, custom_title, joined_at, left_at, 
+        added_by, removed_by, user_id, chat_id
+    )
+
+    updated = await db.aexecute_update(
+        query,
+        params
+    )
