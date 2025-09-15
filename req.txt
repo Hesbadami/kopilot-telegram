@@ -6,4 +6,5 @@ nats-py==2.11.0
 httpx==0.28.1
 anyio==4.10.0
 asynciolimiter==1.2.0
+pillow==11.3.0
 

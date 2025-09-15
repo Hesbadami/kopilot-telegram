@@ -20,6 +20,8 @@ MYSQL_CFG = {
 TELEGRAM_SECRET = os.environ.get("TELEGRAM_SECRET")
 TELEGRAM_TOKEN = os.environ.get("TELEGRAM_TOKEN")
 
+MEDIA_PATH = os.environ.get("MEDIA_PATH")
+
 NATS_CFG = {
     'servers': os.environ.get("NATS_URL"),
     'name': 'kopilot_telegram',

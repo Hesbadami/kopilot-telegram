@@ -3,4 +3,4 @@ myenv
 **/.env
 **/.sql
 **/.log
-
+data
